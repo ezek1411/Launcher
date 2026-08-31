@@ -1,4 +1,4 @@
-name: Installer le projet EKP
+name: Installer les fichiers EKP-Launcher
 
 on:
   workflow_dispatch:
@@ -11,29 +11,53 @@ permissions:
 
 jobs:
   unpack:
+    name: Décompresser le projet
     runs-on: ubuntu-latest
 
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
 
-      - name: Décompresser le projet
-        run: |
-          mkdir unpacked
-          unzip -o EKP-Launcher-fichiers.zip -d unpacked
+      - name: Installer unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
 
-          if [ -d unpacked/EKP-Launcher ]; then
-            cp -R unpacked/EKP-Launcher/. .
-          else
-            cp -R unpacked/. .
+      - name: Vérifier l’archive
+        run: |
+          if [ ! -f "EKP-Launcher-fichiers.zip" ]; then
+            echo "Erreur : EKP-Launcher-fichiers.zip est introuvable."
+            ls -la
+            exit 1
           fi
 
-          rm -rf unpacked EKP-Launcher-fichiers.zip
+      - name: Décompresser le projet
+        run: |
+          set -eux
 
-      - name: Enregistrer les dossiers
+          rm -rf unpacked
+          mkdir -p unpacked
+
+          unzip -o "EKP-Launcher-fichiers.zip" -d unpacked
+
+          if [ -d "unpacked/EKP-Launcher" ]; then
+            cp -R "unpacked/EKP-Launcher/." .
+          else
+            cp -R "unpacked/." .
+          fi
+
+          rm -rf unpacked
+          rm -f "EKP-Launcher-fichiers.zip"
+
+      - name: Ne pas copier le workflow de compilation automatiquement
+        run: |
+          rm -f ".github/workflows/build-windows-mod.yml"
+
+      - name: Enregistrer les fichiers
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add .
-          git commit -m "Installer les fichiers EKP-Launcher" || exit 0
+
+          git commit -m "Installer les fichiers EKP-Launcher" || echo "Aucun changement à enregistrer"
+
           git push
