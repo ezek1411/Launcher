@@ -1,0 +1,39 @@
+name: Installer le projet EKP
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "*.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Décompresser le projet
+        run: |
+          mkdir unpacked
+          unzip -o EKP-Launcher-fichiers.zip -d unpacked
+
+          if [ -d unpacked/EKP-Launcher ]; then
+            cp -R unpacked/EKP-Launcher/. .
+          else
+            cp -R unpacked/. .
+          fi
+
+          rm -rf unpacked EKP-Launcher-fichiers.zip
+
+      - name: Enregistrer les dossiers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Installer les fichiers EKP-Launcher" || exit 0
+          git push
