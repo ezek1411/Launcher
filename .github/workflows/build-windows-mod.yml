@@ -1,0 +1,36 @@
+name: Compiler le mod EKP Windows
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "EKP-Noclip-GD2208/**"
+      - ".github/workflows/build-windows-mod.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compiler EKP Noclip
+    runs-on: windows-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Compiler le mod Geode
+        id: build
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          path: EKP-Noclip-GD2208
+          target: Win64
+          sdk: latest
+          cli: latest
+          build-config: RelWithDebInfo
+
+      - name: Publier le fichier .geode
+        uses: actions/upload-artifact@v4
+        with:
+          name: EKP-Noclip-Windows
+          path: ${{ steps.build.outputs.build-output }}
