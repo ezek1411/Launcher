@@ -1,10 +1,15 @@
 {
   "geode": "4.0.0",
-  "version": "1.0.0",
+  "gd": {
+    "win": "2.208"
+  },
+  "version": "0.1.0",
   "id": "ekp.noclip",
   "name": "EKP Noclip",
   "developer": "EKP",
-  "description": "Mod personnel cible pour Geometry Dash 2.208.",
-  "links": { "source": "https://github.com/" },
-  "tags": ["offline", "experimental"]
+  "description": "Mod personnel experimental cible Geometry Dash 2.208.",
+  "tags": [
+    "experimental",
+    "offline"
+  ]
 }
